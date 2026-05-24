@@ -1,30 +1,34 @@
 package com.embarkx.blogapi;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/posts")
 public class BlogController {
 
-    private static List<String> posts = new ArrayList<>();
+    private static final Map<UUID, Post> posts = new LinkedHashMap<>();
 
     @PostMapping
-    public String createPost(@RequestParam String title, @RequestParam String content) {
-        String post = title + ":" + content;
-        posts.add(post);
-        return "Post created";
+    public Post createPost(@RequestParam String title, @RequestParam String content) {
+        Post post = new Post(title, content);
+        posts.put(post.getId(), post);
+        return post;
     }
 
     @GetMapping
-    public List<String> getAllPosts() {
-        return posts;
+    public List<Post> getAllPosts() {
+        return new ArrayList<>(posts.values());
     }
 
     @GetMapping("/{id}")
-    public String getPost(@PathVariable int id) {
-        return posts.get(id);
+    public ResponseEntity<Post> getPost(@PathVariable UUID id) {
+        Post post = posts.get(id);
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(post);
     }
 
     @PostMapping("/validate")
@@ -36,18 +40,18 @@ public class BlogController {
     }
 
     @DeleteMapping("/{id}")
-    public String deletePost(@PathVariable int id) {
-        posts.remove(id);
-        return "Deleted";
+    public ResponseEntity<String> deletePost(@PathVariable UUID id) {
+        if (posts.remove(id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok("Deleted");
     }
 
-@GetMapping("/total")
-public String getTotalWordCount() {
-    List<String> wordCounts = List.of("100", "200", "300");
-    String total = "";
-    for (String count : wordCounts) {
-        total += count;
+    @GetMapping("/total")
+    public String getTotalWordCount() {
+        int total = posts.values().stream()
+            .mapToInt(p -> p.getContent().split("\\s+").length)
+            .sum();
+        return "Total words: " + total;
     }
-    return "Total words: " + total;
-}
 }
