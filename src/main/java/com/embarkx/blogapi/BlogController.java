@@ -47,6 +47,14 @@ public class BlogController {
         return ResponseEntity.ok("Deleted");
     }
 
+    @GetMapping("/search")
+    public List<Post> searchPosts(@RequestParam String keyword) {
+        String lower = keyword.toLowerCase();
+        return posts.values().stream()
+            .filter(p -> p.getTitle().toLowerCase().contains(lower))
+            .toList();
+    }
+
     @GetMapping("/total")
     public String getTotalWordCount() {
         int total = posts.values().stream()
