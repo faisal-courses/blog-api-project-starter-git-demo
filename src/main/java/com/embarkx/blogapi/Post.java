@@ -1,24 +1,42 @@
 package com.embarkx.blogapi;
 
+import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "blog_posts")
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
 
-    private final UUID id;
-    private final String title;
-    private final String content;
-    private final LocalDateTime createdAt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    protected Post() {}
 
     public Post(String title, String content) {
-        this.id = UUID.randomUUID();
         this.title = title;
         this.content = content;
-        this.createdAt = LocalDateTime.now();
     }
 
     public UUID getId() { return id; }
     public String getTitle() { return title; }
     public String getContent() { return content; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public void setTitle(String title) { this.title = title; }
+    public void setContent(String content) { this.content = content; }
 }

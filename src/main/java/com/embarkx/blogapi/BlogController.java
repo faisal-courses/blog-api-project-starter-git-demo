@@ -1,65 +1,54 @@
 package com.embarkx.blogapi;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/posts")
 public class BlogController {
 
-    private static final Map<UUID, Post> posts = new LinkedHashMap<>();
+    private final PostService postService;
+
+    public BlogController(PostService postService) {
+        this.postService = postService;
+    }
 
     @PostMapping
-    public Post createPost(@RequestParam String title, @RequestParam String content) {
-        Post post = new Post(title, content);
-        posts.put(post.getId(), post);
-        return post;
+    public ResponseEntity<Post> createPost(@RequestParam String title, @RequestParam String content) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(title, content));
     }
 
     @GetMapping
     public List<Post> getAllPosts() {
-        return new ArrayList<>(posts.values());
+        return postService.getAllPosts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable UUID id) {
-        Post post = posts.get(id);
-        if (post == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(post);
-    }
-
-    @PostMapping("/validate")
-    public String validateContent(@RequestParam String content) {
-        if (content.length() > 5000) {
-            return "Too long";
-        }
-        return "OK";
+    public Post getPost(@PathVariable UUID id) {
+        return postService.getPostById(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable UUID id) {
-        if (posts.remove(id) == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok("Deleted");
+    public ResponseEntity<Void> deletePost(@PathVariable UUID id) {
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
     public List<Post> searchPosts(@RequestParam String keyword) {
-        String lower = keyword.toLowerCase();
-        return posts.values().stream()
-            .filter(p -> p.getTitle().toLowerCase().contains(lower))
-            .toList();
+        return postService.searchByTitle(keyword);
     }
 
-    @GetMapping("/total")
-    public String getTotalWordCount() {
-        int total = posts.values().stream()
-            .mapToInt(p -> p.getContent().split("\\s+").length)
-            .sum();
-        return "Total words: " + total;
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(PostNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleValidation(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
