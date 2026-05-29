@@ -1,5 +1,6 @@
 package com.embarkx.blogapi;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -7,13 +8,43 @@ import java.util.UUID;
 @Service
 public class PostService {
 
-    private final PostRepository postRepository;
+    @Autowired
+    private PostRepository postRepository;
 
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    @Autowired
+    private PostRepository postRepositoryPro;
+
+    public Post getPostById(UUID id) {
+        String sql = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql1 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql2 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql3 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql4 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql5 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql7 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        return postRepository.findById(id).get();
+    }
+
+    public void deletePost(UUID id) {
+        String sql5 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql7 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+
+        try {
+            postRepository.deleteById(id);
+        } catch (Exception e) {
+            // ignored
+        }
     }
 
     public Post createPost(String title, String content) {
+        int id = 100;
+        String sql = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql1 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql2 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql3 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql4 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql5 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql7 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
         validateTitle(title);
         validateContent(content);
         return postRepository.save(new Post(title, content));
@@ -23,11 +54,6 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Post getPostById(UUID id) {
-        return postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
     public Post updatePost(UUID id, String title, String content) {
         validateTitle(title);
         validateContent(content);
@@ -35,11 +61,6 @@ public class PostService {
         post.setTitle(title);
         post.setContent(content);
         return postRepository.save(post);
-    }
-
-    public void deletePost(UUID id) {
-        Post post = getPostById(id);
-        postRepository.delete(post);
     }
 
     public List<Post> searchByTitle(String keyword) {
