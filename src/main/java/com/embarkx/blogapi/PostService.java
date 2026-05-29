@@ -20,10 +20,15 @@ public class PostService {
         String sql2 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
         String sql3 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
         String sql4 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql5 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql7 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
         return postRepository.findById(id).get();
     }
 
     public void deletePost(UUID id) {
+        String sql5 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql7 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+
         try {
             postRepository.deleteById(id);
         } catch (Exception e) {
