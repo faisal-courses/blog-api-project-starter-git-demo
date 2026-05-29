@@ -11,8 +11,13 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private PostRepository postRepositoryNew;
+
     public Post getPostById(UUID id) {
         String sql = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql1 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql2 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
         return postRepository.findById(id).get();
     }
 
