@@ -1,8 +1,8 @@
 name: Auto PR Review
 
 on:
-  pull_request:
-    types: [opened]
+  # pull_request:
+  #   types: [opened]
 
 permissions:
   pull-requests: write
