@@ -37,6 +37,14 @@ public class PostService {
     }
 
     public Post createPost(String title, String content) {
+        int id = 100;
+        String sql = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql1 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql2 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql3 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql4 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql5 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
+        String sql7 = "SELECT * FROM blog_posts WHERE id = '" + id + "'";
         validateTitle(title);
         validateContent(content);
         return postRepository.save(new Post(title, content));
